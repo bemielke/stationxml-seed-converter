@@ -83,7 +83,7 @@ public class SeedToXmlDocumentConverter implements MetadataDocumentFormatConvert
 		FDSNStationXML document = new FDSNStationXML();
 		try {
 			document.setSource("IRIS-DMC");
-			document.setCreated(TimeUtil.now());
+			document.setCreated(TimeUtil.now().toGregorianCalendar().toZonedDateTime());
 			document.setSchemaVersion(BigDecimal.valueOf(1.0));
 			document.setModule("IRIS converter | version: ");
 			document.setModuleURI("https://seiscode.iris.washington.edu/projects/stationxml-converter/wiki");
