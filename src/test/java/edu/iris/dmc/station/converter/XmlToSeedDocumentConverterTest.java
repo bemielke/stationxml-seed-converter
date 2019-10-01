@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import edu.iris.dmc.IrisUtil;
 import edu.iris.dmc.fdsn.station.model.FDSNStationXML;
 import edu.iris.dmc.seed.Blockette;
 import edu.iris.dmc.seed.Volume;
@@ -19,7 +20,6 @@ import edu.iris.dmc.seed.control.station.B052;
 import edu.iris.dmc.seed.control.station.B058;
 import edu.iris.dmc.seed.control.station.ResponseBlockette;
 import edu.iris.dmc.seed.control.station.SeedResponseStage;
-import edu.iris.dmc.station.util.XmlUtils;
 
 public class XmlToSeedDocumentConverterTest {
 
@@ -27,11 +27,10 @@ public class XmlToSeedDocumentConverterTest {
 	public void t1() {
 		File source = null, target = null;
 		try {
-
 			source = new File(
 					XmlToSeedDocumentConverterTest.class.getClassLoader().getResource("IU_ANMO_BHZ.xml").getFile());
 
-			final FDSNStationXML document = XmlUtils.load(source);
+			final FDSNStationXML document = IrisUtil.readXml(source);
 			Volume volume = XmlToSeedDocumentConverter.getInstance().convert(document);
 
 			assertFalse(volume.isEmpty());
@@ -40,7 +39,13 @@ public class XmlToSeedDocumentConverterTest {
 			Blockette b = blockettes.get(1);
 
 			assertTrue(b instanceof B051);
-
+			byte[] bytes = b.toSeedString().getBytes();
+	     	assertEquals(b.getSize(), bytes.length);
+	     	
+	     	//Blockette are now all built to 9999 in length
+	     	/// This could be a problem
+	     	
+	     	
 			/*
 			 * blockettes = volume.find("IU", "ANMO", "BHZ", null); assertEquals(8,
 			 * blockettes.size());
@@ -85,7 +90,7 @@ public class XmlToSeedDocumentConverterTest {
 			source = new File(
 					XmlToSeedDocumentConverterTest.class.getClassLoader().getResource("ANMO-one-epoch.xml").getFile());
 
-			final FDSNStationXML document = XmlUtils.load(source);
+			final FDSNStationXML document = IrisUtil.readXml(source);
 			Volume volume = XmlToSeedDocumentConverter.getInstance().convert(document);
 
 			assertFalse(volume.isEmpty());
@@ -101,16 +106,16 @@ public class XmlToSeedDocumentConverterTest {
 			List<SeedResponseStage> response = b052.getResponseStages();
 			assertNotNull(response);
 
-			SeedResponseStage stage = b052.getResponseStage(0);
+			// System.out.println('TEST TESTS TEST');
+
+			SeedResponseStage stage = b052.getResponseStage(1);
 			assertNotNull(stage);
 
 			List<ResponseBlockette> blockettes = stage.getBlockettes();
 			B058 b058 = (B058) blockettes.get(0);
 
-
 			System.out.println(b058.getSignalInputUnit());
 			System.out.println(b058.getSignalOutputUnit());
-
 			System.out.println(b058.toSeedString());
 
 		} catch (Exception e) {

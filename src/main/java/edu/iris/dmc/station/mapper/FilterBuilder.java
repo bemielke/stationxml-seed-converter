@@ -1,18 +1,17 @@
 package edu.iris.dmc.station.mapper;
 
-import edu.iris.dmc.fdsn.station.model.Filter;
+import edu.iris.dmc.fdsn.station.model.ResponseType;
 import edu.iris.dmc.seed.Blockette;
 import edu.iris.dmc.seed.control.dictionary.B041;
 import edu.iris.dmc.seed.control.dictionary.B042;
 import edu.iris.dmc.seed.control.dictionary.B043;
 import edu.iris.dmc.seed.control.dictionary.B044;
 import edu.iris.dmc.seed.control.dictionary.B045;
-import edu.iris.dmc.seed.control.dictionary.B046;
 import edu.iris.dmc.seed.control.dictionary.B049;
 
 public class FilterBuilder extends AbstractMapper {
 
-	public static Filter build(Blockette b) throws Exception {
+	public static ResponseType build(Blockette b) throws Exception {
 
 		switch (b.getType()) {
 		case 41:

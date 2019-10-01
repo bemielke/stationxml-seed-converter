@@ -8,8 +8,11 @@ import java.io.File;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import edu.iris.dmc.IrisUtil;
 import edu.iris.dmc.fdsn.station.model.Channel;
 import edu.iris.dmc.fdsn.station.model.FDSNStationXML;
 import edu.iris.dmc.fdsn.station.model.Network;
@@ -18,34 +21,35 @@ import edu.iris.dmc.fdsn.station.model.Response;
 import edu.iris.dmc.fdsn.station.model.ResponseStage;
 import edu.iris.dmc.fdsn.station.model.Station;
 import edu.iris.dmc.seed.Volume;
-import edu.iris.dmc.station.util.XmlUtils;
 
 public class XmlSeedXmlTest {
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
 	public void caseOne() throws Exception {
 		File source = new File(
 				XmlToSeedDocumentConverterTest.class.getClassLoader().getResource("CU_ANWB_BH2.xml").getFile());
 
-		final FDSNStationXML original = XmlUtils.load(source);
+		final FDSNStationXML original = IrisUtil.readXml(source);
+
+		JAXBContext jContext = JAXBContext.newInstance(FDSNStationXML.class);
+		// creating the marshaller object
+		Marshaller marshallObj = jContext.createMarshaller();
+		// setting the property to show xml format output
+		marshallObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+		marshallObj.marshal(original, System.out);
 		Volume volume = XmlToSeedDocumentConverter.getInstance().convert(original);
 
 		final FDSNStationXML target = SeedToXmlDocumentConverter.getInstance().convert(volume);
-		
-		
-		
-		 JAXBContext jContext = JAXBContext.newInstance(FDSNStationXML.class);
-		    //creating the marshaller object
-		    Marshaller marshallObj = jContext.createMarshaller();
-		    //setting the property to show xml format output
-		    marshallObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		    //setting the values in POJO class
 
-		    //calling the marshall method
-		    marshallObj.marshal(target, System.out);
+		// setting the values in POJO class
 
-		
-		
+		// calling the marshall method
+		marshallObj.marshal(target, System.out);
+
 		assertNotNull(target);
 		assertNotNull(target.getNetwork());
 		assertEquals(1, target.getNetwork().size());
@@ -74,7 +78,7 @@ public class XmlSeedXmlTest {
 		assertNotNull(stage1.getPolesZeros());
 
 		assertNotNull(stage1.getPolesZeros().getInputUnits());
-		assertEquals("M/S", stage1.getPolesZeros().getInputUnits().getName());
+		assertEquals("m/s", stage1.getPolesZeros().getInputUnits().getName());
 		assertNotNull(stage1.getPolesZeros().getOutputUnits());
 		assertEquals("V", stage1.getPolesZeros().getOutputUnits().getName());
 

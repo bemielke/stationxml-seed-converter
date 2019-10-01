@@ -1,18 +1,11 @@
 package edu.iris.dmc.station.util;
 
-import static org.junit.Assert.assertEquals;
-
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
 
+import edu.iris.dmc.IrisUtil;
 import edu.iris.dmc.seed.BTime;
 
 public class TimeUtilTest {
@@ -21,7 +14,7 @@ public class TimeUtilTest {
 	public void toTime() throws Exception {
 		BTime bTime = new BTime(2000, 1, 10, 10, 10, 10);
 		System.out.println(bTime.toSeedString());
-		ZonedDateTime zonedDateTime = TimeUtil.toZonedDateTime(bTime);
+		ZonedDateTime zonedDateTime = IrisUtil.toZonedDateTime(bTime);
 		System.out.println(bTime.toSeedString()+"    "+zonedDateTime);
 	}
 	// @Test

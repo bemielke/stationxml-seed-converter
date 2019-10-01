@@ -2,8 +2,7 @@ package edu.iris.dmc.station.mapper;
 
 import java.math.BigDecimal;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-
+import edu.iris.dmc.IrisUtil;
 import edu.iris.dmc.fdsn.station.model.Azimuth;
 import edu.iris.dmc.fdsn.station.model.Channel;
 import edu.iris.dmc.fdsn.station.model.Channel.ClockDrift;
@@ -15,7 +14,6 @@ import edu.iris.dmc.fdsn.station.model.SampleRate;
 import edu.iris.dmc.seed.BTime;
 import edu.iris.dmc.seed.SeedException;
 import edu.iris.dmc.seed.control.station.B052;
-import edu.iris.dmc.station.util.TimeUtil;
 
 public class ChannelBlocketteMapper extends AbstractMapper {
 
@@ -30,12 +28,12 @@ public class ChannelBlocketteMapper extends AbstractMapper {
 
 		BTime bTime = blockette.getStartTime();
 		if (bTime != null) {
-			channel.setStartDate(TimeUtil.toZonedDateTime(bTime));
+			channel.setStartDate(IrisUtil.toZonedDateTime(bTime));
 		}
 
 		bTime = blockette.getEndTime();
 		if (bTime != null) {
-			channel.setEndDate(TimeUtil.toZonedDateTime(bTime));
+			channel.setEndDate(IrisUtil.toZonedDateTime(bTime));
 		}
 
 		Latitude latitude = factory.createLatitudeType();
@@ -65,7 +63,7 @@ public class ChannelBlocketteMapper extends AbstractMapper {
 			if (dip != null && (dip.getValue() == 90 || dip.getValue() == -90)) {
 				if (BigDecimal.ZERO.compareTo(BigDecimal.valueOf(azimuthValue)) != 0) {
 					if (azimuthValue.intValue() >= 360) {
-						azimuth.setValue(0);
+						azimuth.setValue(Double.valueOf(0));
 					} else {
 						azimuth.setValue(azimuthValue);
 					}
@@ -131,11 +129,25 @@ public class ChannelBlocketteMapper extends AbstractMapper {
 
 		b.setLatitude(channel.getLatitude().getValue());
 		b.setLongitude(channel.getLongitude().getValue());
-		b.setElevation(channel.getElevation().getValue());
+		if (channel.getElevation() != null) {
+			b.setElevation(channel.getElevation().getValue());
+		}
 
+		if (channel.getDepth() != null) {
+			b.setLocalDepth(channel.getDepth().getValue());
+		}
+		if (channel.getAzimuth() != null) {
+			b.setAzimuth(channel.getAzimuth().getValue());
+		}
+		if (channel.getDip() != null) {
+			b.setDip(channel.getDip().getValue());
+		}
 		b.setLocalDepth(channel.getDepth().getValue());
-		b.setAzimuth(channel.getAzimuth().getValue());
-		b.setDip(channel.getDip().getValue());
+		try {
+		    b.setAzimuth(channel.getAzimuth().getValue());
+		    b.setDip(channel.getDip().getValue());
+		}catch(NullPointerException e) {
+			}
 
 		b.setDataRecordLength(12);
 		if (channel.getSampleRate() != null) {
@@ -176,13 +188,10 @@ public class ChannelBlocketteMapper extends AbstractMapper {
 		}
 		b.setChannelFlags(sb.toString());
 
-		try {
-			b.setStartTime(TimeUtil.toBTime(channel.getStartDate()));
-			b.setEndTime(TimeUtil.toBTime(channel.getEndDate()));
-			b.setUpdateFlag('N');
-			return b;
-		} catch (DatatypeConfigurationException e) {
-			throw new SeedException(e);
-		}
+		b.setStartTime(IrisUtil.toBTime(channel.getStartDate()));
+		b.setEndTime(IrisUtil.toBTime(channel.getEndDate()));
+		b.setUpdateFlag('N');
+		return b;
+
 	}
 }
