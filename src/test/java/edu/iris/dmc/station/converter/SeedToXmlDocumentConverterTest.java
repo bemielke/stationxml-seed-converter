@@ -25,6 +25,7 @@ import edu.iris.dmc.seed.Volume;
 import edu.iris.dmc.seed.control.station.B050;
 import edu.iris.dmc.seed.BTime;
 import edu.iris.dmc.station.mapper.SeedStringBuilder;
+import org.junit.Ignore;
 
 public class SeedToXmlDocumentConverterTest {
 
@@ -78,6 +79,7 @@ public class SeedToXmlDocumentConverterTest {
 
 	}
 	
+        @Ignore("Do not have the AfricaArray file.")
 	@Test
 	public void startend_time() {
 		File source = null, target = null;
